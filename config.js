@@ -1,7 +1,7 @@
 
 const config = {
-    identityMetadata: "Enter_the_Metadata_Endpoint_Here",
-    clientID: "Enter_the_Application_Id_Here",
+    identityMetadata: "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47",
+    clientID: "0c162f59-e8dd-4719-92a6-f1dd43e7cf3a",
     validateIssuer: false,
     loggingLevel: 'info',
     passReqToCallback: false

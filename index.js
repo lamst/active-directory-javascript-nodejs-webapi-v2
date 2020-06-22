@@ -1,4 +1,5 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const passport = require("passport");
 const config = require('./config');
@@ -16,11 +17,15 @@ const bearerStrategy = new BearerStrategy(config, (token, done) => {
     }
 );
 
+var todoStore = [];
+
+const router = express.Router();
 const app = express();
 
 app.use(morgan('dev'));
-
 app.use(passport.initialize());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 passport.use(bearerStrategy);
 
@@ -32,27 +37,20 @@ app.use((req, res, next) => {
 });
 
 // API endpoint
-app.get("/hello",
-    passport.authenticate('oauth-bearer', {session: false}),
-    (req, res) => {
-        console.log('User info: ', req.user);
-        console.log('Validated claims: ', req.authInfo);
+router.get("/api/todolist", (req, res) => {
+    res.status(200).json(JSON.stringify(todoStore));
+});
 
-        if (req.authInfo['scp'].split(" ").indexOf("demo.read") >= 0) {
-            // Service relies on the name claim.  
-            res.status(200).json({
-                'request-for': 'access_token',
-                'requested-by': req.authInfo['name'],
-                'issued-by': req.authInfo['iss'],
-                'issued-for': req.authInfo['aud'],
-                'scope': req.authInfo['scp']
-            });
-        } else {
-            console.log("Invalid Scope, 403");
-            res.status(403).json({'error': 'insufficient_scope'}); 
-        }
+router.post("/api/todolist", (req, res) => {
+    if (req.body.owner && req.body.title) {
+        console.log(req.body);
+        todoStore.push(req.body);
     }
-);
+    res.status(200).end();
+});
+
+// Add router to the express app
+app.use("/", router);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
