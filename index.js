@@ -38,12 +38,16 @@ app.use((req, res, next) => {
 
 // API endpoint
 router.get("/api/todolist", (req, res) => {
-    res.status(200).json(JSON.stringify(todoStore));
+    console.log(JSON.stringify(todoStore));
+    res.status(200).json(todoStore);
 });
 
 router.post("/api/todolist", (req, res) => {
-    if (req.body.owner && req.body.title) {
+    if (req.body.hasOwnProperty('Title')) {
         console.log(req.body);
+        if (!req.body.hasOwnProperty('Owner')) {
+            req.body.Owner = '';
+        }
         todoStore.push(req.body);
     }
     res.status(200).end();
@@ -52,7 +56,7 @@ router.post("/api/todolist", (req, res) => {
 // Add router to the express app
 app.use("/", router);
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8282;
 app.listen(port, () => {
     console.log("Listening on port " + port);
 });
